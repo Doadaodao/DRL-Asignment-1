@@ -1,3 +1,6 @@
+import sys
+sys.path.append('/usr/local/anaconda3/lib/python3.12/site-packages')
+
 import gym
 import numpy as np
 import importlib.util
