@@ -10,7 +10,7 @@ alpha = 0.1          # Learning rate
 gamma = 0.99         # Discount factor
 epsilon = 1.0        # Exploration rate
 epsilon_min = 0.1
-epsilon_decay = 0.999  # Epsilon decays each step or episode
+epsilon_decay = 0.9994  # Epsilon decays each step or episode
 
 num_episodes = 5000  # Increase as needed
 max_steps_per_episode = 4000  # Just a safeguard if you want
@@ -25,7 +25,7 @@ def get_q_values(state):
         q_table[state] = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
     return q_table[state]
 
-env = SimpleTaxiEnv(grid_size=5, fuel_limit=5000)
+env = CustomTaxiEnv()
 
 rewards_per_episode = []
 

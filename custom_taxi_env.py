@@ -131,22 +131,30 @@ class CustomTaxiEnv:
         Minimally includes taxi row/col, passenger row/col (or 'in_taxi'),
         and destination. The simplest approach is a direct numeric encoding.
         """
-        (taxi_r, taxi_c) = self.taxi_pos
-        if self.passenger_picked:
-            # Represent passenger as in-taxi with a special code
-            passenger_r, passenger_c = (-1, -1) 
-        else:
-            passenger_r, passenger_c = self.passenger_loc
-        
-        dest_r, dest_c = self.destination
+        (taxi_row, taxi_col) = self.taxi_pos
+        obstacle_north = int(taxi_row == 0 or (taxi_row-1, taxi_col) in self.obstacles)
+        obstacle_south = int(taxi_row == self.grid_size - 1 or (taxi_row+1, taxi_col) in self.obstacles)
+        obstacle_east  = int(taxi_col == self.grid_size - 1 or (taxi_row, taxi_col+1) in self.obstacles)
+        obstacle_west  = int(taxi_col == 0 or (taxi_row , taxi_col-1) in self.obstacles)
+
+        passenger_loc_north = int((taxi_row - 1, taxi_col) == self.passenger_loc)
+        passenger_loc_south = int((taxi_row + 1, taxi_col) == self.passenger_loc)
+        passenger_loc_east  = int((taxi_row, taxi_col + 1) == self.passenger_loc)
+        passenger_loc_west  = int((taxi_row, taxi_col - 1) == self.passenger_loc)
+        passenger_loc_middle  = int( (taxi_row, taxi_col) == self.passenger_loc)
+        passenger_look = passenger_loc_north or passenger_loc_south or passenger_loc_east or passenger_loc_west or passenger_loc_middle
+       
+        destination_loc_north = int( (taxi_row - 1, taxi_col) == self.destination)
+        destination_loc_south = int( (taxi_row + 1, taxi_col) == self.destination)
+        destination_loc_east  = int( (taxi_row, taxi_col + 1) == self.destination)
+        destination_loc_west  = int( (taxi_row, taxi_col - 1) == self.destination)
+        destination_loc_middle  = int( (taxi_row, taxi_col) == self.destination)
+        destination_look = destination_loc_north or destination_loc_south or destination_loc_east or destination_loc_west or destination_loc_middle
+
         
         # Example: state is just these 6 numbers + a “has_passenger” flag
-        return (
-            taxi_r, taxi_c,
-            passenger_r, passenger_c,
-            dest_r, dest_c,
-            int(self.passenger_picked)
-        )
+        state = (taxi_row, taxi_col, self.stations[0][0],self.stations[0][1] ,self.stations[1][0],self.stations[1][1],self.stations[2][0],self.stations[2][1],self.stations[3][0],self.stations[3][1],obstacle_north, obstacle_south, obstacle_east, obstacle_west, passenger_look, destination_look)
+        return state
 
     def render(self):
         """
