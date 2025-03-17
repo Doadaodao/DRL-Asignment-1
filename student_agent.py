@@ -21,7 +21,13 @@ def get_action(obs):
     obs is the environment state (tuple).
     Return an integer from 0-5 that picks the best known action.
     """
-    q_values = get_q_values(obs)
-    action = int(np.argmax(q_values))
+    
+    if np.random.rand() < 0.01:
+        action = np.random.choice([0, 1, 2, 3, 4, 5])
+    else:
+        q_values = get_q_values(obs)
+        action = int(np.argmax(q_values))
+    # q_values = get_q_values(obs)
+    # action = int(np.argmax(q_values))
     # return random.choice([0, 1, 2, 3, 4, 5])
     return action
