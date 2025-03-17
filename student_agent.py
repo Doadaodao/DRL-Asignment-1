@@ -1,4 +1,5 @@
 import pickle
+import random
 import numpy as np
 import os
 
@@ -22,4 +23,5 @@ def get_action(obs):
     """
     q_values = get_q_values(obs)
     action = int(np.argmax(q_values))
+    # return random.choice([0, 1, 2, 3, 4, 5])
     return action
