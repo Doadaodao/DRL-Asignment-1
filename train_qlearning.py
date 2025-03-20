@@ -25,39 +25,67 @@ def get_q_values(state):
         q_table[state] = [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
     return q_table[state]
 
-env = CustomTaxiEnv()
+# Feature extractor to convert raw state to feature vector
+def extract_features(state):
+    taxi_row, taxi_col, s0_r, s0_c, s1_r, s1_c, s2_r, s2_c, s3_r, s3_c, \
+    obstacle_north, obstacle_south, obstacle_east, obstacle_west, \
+    passenger_look, destination_look = state
+
+    features = []
+    
+    # Create station list
+    stations = [(s0_r, s0_c), (s1_r, s1_c), (s2_r, s2_c), (s3_r, s3_c)]
+
+    # for station in stations:
+    #     features.append(station[0] - taxi_row)
+    #     features.append(station[1] - taxi_col)
+    
+    features.append(obstacle_north)
+    features.append(obstacle_south)
+    features.append(obstacle_east)
+    features.append(obstacle_west)
+
+    features.append(passenger_look)
+    features.append(destination_look)
+    
+    return tuple(features)
+
+env = CustomTaxiEnv(fuel_limit=10000)
 
 rewards_per_episode = []
 
 for episode in range(num_episodes):
     state, _ = env.reset()
+    feature = extract_features(state)
     total_reward = 0
 
     done = False
 
     while not done:
         # Initialize the state in the Q-table if it is not already present.
-        if state not in q_table:
-            q_table[state] = np.zeros(6)
+        if feature not in q_table:
+            q_table[feature] = np.zeros(6)
 
         # Implement an ε-greedy policy for action selection.
         if np.random.rand() < epsilon:
             action = np.random.choice([0, 1, 2, 3, 4, 5])
         else:
-            action = np.argmax(q_table[state])
+            action = np.argmax(q_table[feature])
 
         next_state, reward, done, _ = env.step(action)
+        next_feature = extract_features(state)
         total_reward += reward
 
-        if next_state not in q_table:
-            q_table[next_state] = np.zeros(6)
+        if next_feature not in q_table:
+            q_table[next_feature] = np.zeros(6)
         
-        best_next_action = np.argmax(q_table[next_state])
-        td_target = reward + gamma * q_table[next_state][best_next_action]
-        td_error = td_target - q_table[state][action]
-        q_table[state][action] += alpha * td_error
+        best_next_action = np.argmax(q_table[next_feature])
+        td_target = reward + gamma * q_table[next_feature][best_next_action]
+        td_error = td_target - q_table[feature][action]
+        q_table[feature][action] += alpha * td_error
 
         state = next_state
+        feature = next_feature
     
     rewards_per_episode.append(total_reward)
 

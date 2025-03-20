@@ -33,6 +33,32 @@ else:
     print(f"Warning: Model file {MODEL_PATH} not found. get_action will not work properly.")
 
 
+# Feature extractor to convert raw state to feature vector
+def extract_features(state):
+    taxi_row, taxi_col, s0_r, s0_c, s1_r, s1_c, s2_r, s2_c, s3_r, s3_c, \
+    obstacle_north, obstacle_south, obstacle_east, obstacle_west, \
+    passenger_look, destination_look = state
+
+    features = []
+    
+    # Create station list
+    stations = [(s0_r, s0_c), (s1_r, s1_c), (s2_r, s2_c), (s3_r, s3_c)]
+
+    # for station in stations:
+    #     features.append(station[0] - taxi_row)
+    #     features.append(station[1] - taxi_col)
+    
+    features.append(obstacle_north)
+    features.append(obstacle_south)
+    features.append(obstacle_east)
+    features.append(obstacle_west)
+
+    features.append(passenger_look)
+    features.append(destination_look)
+    
+    return tuple(features)
+
+
 
 # Load Q-table once, at import time
 # Make sure "q_table.pkl" is in the same directory or provide correct path
@@ -52,33 +78,35 @@ def get_action(obs):
     obs is the environment state (tuple).
     Return an integer from 0-5 that picks the best known action.
     """
-    
-    # if np.random.rand() < 0.1:
-    #     action = np.random.choice([0, 1, 2, 3, 4, 5])
-    # else:
-    #     q_values = get_q_values(obs)
-    #     action = int(np.argmax(q_values))
-    # # q_values = get_q_values(obs)
-    # # action = int(np.argmax(q_values))
-    # # return random.choice([0, 1, 2, 3, 4, 5])
 
-    if trained_model is None:
-        # If the model isn't loaded, you could either raise an error or return a random action.
-        raise ValueError("Trained model not loaded. Please ensure that dqn_taxi_model.pkl exists.")
+    feature = extract_features(obs)
     
-    # Convert observation (tuple) to a PyTorch tensor.
-    # Ensure the input has the correct shape: [batch_size, STATE_DIM]
-    obs_tensor = torch.FloatTensor(np.array(obs)).unsqueeze(0)  # shape: (1, STATE_DIM)
+    if np.random.rand() < 0.1:
+        action = np.random.choice([0, 1, 2, 3, 4, 5])
+    else:
+        q_values = get_q_values(feature)
+        action = int(np.argmax(q_values))
+    # q_values = get_q_values(obs)
+    # action = int(np.argmax(q_values))
+    # return random.choice([0, 1, 2, 3, 4, 5])
+
+    # if trained_model is None:
+    #     # If the model isn't loaded, you could either raise an error or return a random action.
+    #     raise ValueError("Trained model not loaded. Please ensure that dqn_taxi_model.pkl exists.")
     
-    # Forward pass through the network to get Q-values for each action.
-    with torch.no_grad():
-        q_values = trained_model(obs_tensor)
+    # # Convert observation (tuple) to a PyTorch tensor.
+    # # Ensure the input has the correct shape: [batch_size, STATE_DIM]
+    # obs_tensor = torch.FloatTensor(np.array(obs)).unsqueeze(0)  # shape: (1, STATE_DIM)
     
-    # Choose the action with the highest Q-value.
-    action = q_values.argmax(dim=1).item()
+    # # Forward pass through the network to get Q-values for each action.
+    # with torch.no_grad():
+    #     q_values = trained_model(obs_tensor)
+    
+    # # Choose the action with the highest Q-value.
+    # action = q_values.argmax(dim=1).item()
 
 
 
     
-    action = np.random.choice([0, 1, 2, 3, 4, 5])
+    # action = np.random.choice([0, 1, 2, 3, 4, 5])
     return action
