@@ -63,8 +63,8 @@ def extract_features(state):
 # Load Q-table once, at import time
 # Make sure "q_table.pkl" is in the same directory or provide correct path
 q_table = {}
-if os.path.exists("q_table_2_9999_10000.pkl"):
-    with open("q_table_2_9999_10000.pkl","rb") as f:
+if os.path.exists("q_table_2_99993_15000.pkl"):
+    with open("q_table_2_99993_15000.pkl","rb") as f:
         q_table = pickle.load(f)
 
 def get_q_values(state):

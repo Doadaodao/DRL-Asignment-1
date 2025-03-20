@@ -10,9 +10,9 @@ alpha = 0.2          # Learning rate
 gamma = 0.99         # Discount factor
 epsilon = 1.0        # Exploration rate
 epsilon_min = 0.1
-epsilon_decay = 0.9999  # Epsilon decays each step or episode
+epsilon_decay = 0.9993  # Epsilon decays each step or episode
 
-num_episodes = 10000  # Increase as needed
+num_episodes = 15000  # Increase as needed
 max_steps_per_episode = 4000  # Just a safeguard if you want
 
 # Q-Table as a dictionary: {state: [Q-values for each action]}
@@ -98,7 +98,7 @@ for episode in range(num_episodes):
 
 
 # Save final Q-table to disk
-with open("q_table_2_9999_10000.pkl", "wb") as f:
+with open("q_table_2_99993_15000.pkl", "wb") as f:
     pickle.dump(q_table, f)
 
-print("Training finished and Q-table saved to q_table_2_9999_10000.pkl.")
+print("Training finished and Q-table saved to q_table_2_99993_15000.pkl.")
