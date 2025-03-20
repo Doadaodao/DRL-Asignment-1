@@ -63,8 +63,8 @@ def extract_features(state):
 # Load Q-table once, at import time
 # Make sure "q_table.pkl" is in the same directory or provide correct path
 q_table = {}
-if os.path.exists("q_table.pkl"):
-    with open("q_table.pkl","rb") as f:
+if os.path.exists("q_table_2_9999_10000.pkl"):
+    with open("q_table_2_9999_10000.pkl","rb") as f:
         q_table = pickle.load(f)
 
 def get_q_values(state):
@@ -81,7 +81,7 @@ def get_action(obs):
 
     feature = extract_features(obs)
     
-    if np.random.rand() < 0.01:
+    if np.random.rand() < 0.0001:
         action = np.random.choice([0, 1, 2, 3, 4, 5])
     else:
         q_values = get_q_values(feature)
