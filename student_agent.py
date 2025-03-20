@@ -81,7 +81,7 @@ def get_action(obs):
 
     feature = extract_features(obs)
     
-    if np.random.rand() < 0.1:
+    if np.random.rand() < 0.01:
         action = np.random.choice([0, 1, 2, 3, 4, 5])
     else:
         q_values = get_q_values(feature)
