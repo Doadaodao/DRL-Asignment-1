@@ -269,7 +269,7 @@ if __name__ == "__main__":
     }
 
     agent_scores = []
-    for _ in range(20):
+    for _ in range(10):
         agent_score = run_agent("student_agent.py", env_config, render=True)
         agent_scores.append(agent_score)
     print(f"Average Score: {np.mean(agent_scores)}")
