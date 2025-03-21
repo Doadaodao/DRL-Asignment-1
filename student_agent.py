@@ -92,11 +92,9 @@ def get_action(obs):
 
     feature = extract_features(obs)
     
-    if np.random.rand() < 0.0001:
-        action = np.random.choice([0, 1, 2, 3, 4, 5])
-    else:
-        q_values = get_q_values(feature)
-        action = int(np.argmax(q_values))
+    
+    q_values = get_q_values(feature)
+    action = int(np.argmax(q_values))
 
     # if trained_model is None:
     #     # If the model isn't loaded, you could either raise an error or return a random action.

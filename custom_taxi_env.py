@@ -261,7 +261,7 @@ def run_agent(agent_file, env_config, render=False):
                            action=action, step=step_count, fuel=env.fuel)
 
     print(f"Agent Finished in {step_count} steps, Score: {total_reward}")
-    return total_reward
+    return total_reward, step_count
 
 if __name__ == "__main__":
     env_config = {
@@ -269,8 +269,11 @@ if __name__ == "__main__":
     }
 
     agent_scores = []
+    step_counts = []
     for _ in range(10):
-        agent_score = run_agent("student_agent.py", env_config, render=True)
+        agent_score, step_count = run_agent("student_agent.py", env_config, render=True)
         agent_scores.append(agent_score)
+        step_counts.append(step_count)
     print(f"Average Score: {np.mean(agent_scores)}")
+    print(f"Average Step: {np.mean(step_counts)}")
     print(f"Scores: {agent_scores}")
