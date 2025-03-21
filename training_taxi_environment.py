@@ -134,6 +134,9 @@ class TrainingTaxiEnv:
             else:
                 # Valid move
                 self.taxi_pos = (nr, nc)
+
+                if self.taxi_pos in self.stations:
+                    reward += 10
                 
                 # If passenger was in the taxi, passenger location follows taxi
                 if self.passenger_picked:

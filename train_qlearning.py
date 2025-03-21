@@ -37,6 +37,12 @@ def extract_features(state):
     # Create station list
     stations = [(s0_r, s0_c), (s1_r, s1_c), (s2_r, s2_c), (s3_r, s3_c)]
 
+    
+    station_north = int((taxi_row-1, taxi_col) in stations)
+    station_south = int((taxi_row+1, taxi_col) in stations)
+    station_east = int((taxi_row, taxi_col+1) in stations)
+    station_west = int((taxi_row, taxi_col-1) in stations)
+
     at_passenger = 0
     for station in stations:
         if taxi_row == station[0] and taxi_col == station[1] and passenger_look:
@@ -56,6 +62,11 @@ def extract_features(state):
     features.append(obstacle_east)
     features.append(obstacle_west)
 
+    features.append(station_north)
+    features.append(station_south)
+    features.append(station_east)
+    features.append(station_west)
+
     features.append(passenger_look)
     features.append(destination_look)
 
@@ -64,7 +75,7 @@ def extract_features(state):
     
     return tuple(features)
 
-env = TrainingTaxiEnv(max_size=6)
+env = TrainingTaxiEnv(max_size=7)
 
 rewards_per_episode = []
 
@@ -112,7 +123,7 @@ for episode in range(num_episodes):
 
 
 # Save final Q-table to disk
-with open("q_table_reward_shrink.pkl", "wb") as f:
+with open("q_table_training_env_station_feature.pkl", "wb") as f:
     pickle.dump(q_table, f)
 
-print("Training finished and Q-table saved to q_table_reward_shrink.pkl.")
+print("Training finished and Q-table saved to q_table_training_env_station_feature.pkl.")

@@ -5,6 +5,7 @@ import torch.nn.functional as F
 import numpy as np
 import random
 from custom_taxi_env import CustomTaxiEnv
+from training_taxi_environment import TrainingTaxiEnv
 
 # -------------------------------
 # Feature Extraction Function
@@ -89,7 +90,7 @@ def train():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
 
-    env = CustomTaxiEnv(fuel_limit=10000)
+    env = TrainingTaxiEnv(max_size=8)
     input_dim = 20     # As per our feature extractor.
     hidden_dim = 64
     output_dim = 6     # Number of possible actions.
@@ -155,8 +156,8 @@ def train():
                   f"Avg Steps: {avg_steps:.1f}")
     
     # Save the trained model locally.
-    torch.save(policy_net.state_dict(), "policy_model_pickup_reward.pkl")
-    print("Training complete. Model saved as 'policy_model.pkl'.")
+    torch.save(policy_net.state_dict(), "policy_model_training_env.pkl")
+    print("Training complete. Model saved as 'policy_model_training_env.pkl'.")
 
 if __name__ == "__main__":
     train()
