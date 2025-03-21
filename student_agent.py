@@ -6,31 +6,31 @@ import torch
 import torch.nn as nn
 
 # Define the DQN network (must match the training architecture)
-class DQN(nn.Module):
-    def __init__(self, state_dim, action_dim):
-        super(DQN, self).__init__()
-        self.fc1 = nn.Linear(state_dim, 64)
-        self.fc2 = nn.Linear(64, 64)
-        self.fc3 = nn.Linear(64, action_dim)
+# class DQN(nn.Module):
+#     def __init__(self, state_dim, action_dim):
+#         super(DQN, self).__init__()
+#         self.fc1 = nn.Linear(state_dim, 64)
+#         self.fc2 = nn.Linear(64, 64)
+#         self.fc3 = nn.Linear(64, action_dim)
     
-    def forward(self, x):
-        x = torch.relu(self.fc1(x))
-        x = torch.relu(self.fc2(x))
-        return self.fc3(x)
+#     def forward(self, x):
+#         x = torch.relu(self.fc1(x))
+#         x = torch.relu(self.fc2(x))
+#         return self.fc3(x)
 
-# Global constants (update these if your state dimension is different)
-STATE_DIM = 16      # e.g., length of the state tuple (this should match your environment)
-ACTION_DIM = 6      # six possible discrete actions
+# # Global constants (update these if your state dimension is different)
+# STATE_DIM = 16      # e.g., length of the state tuple (this should match your environment)
+# ACTION_DIM = 6      # six possible discrete actions
 
-# Load the trained model once (this code is executed when the module is imported)
-MODEL_PATH = "dqn_taxi_model.pkl"
-if os.path.exists(MODEL_PATH):
-    trained_model = DQN(STATE_DIM, ACTION_DIM)
-    trained_model.load_state_dict(torch.load(MODEL_PATH, map_location=torch.device("cpu")))
-    trained_model.eval()  # set the model to evaluation mode
-else:
-    trained_model = None
-    print(f"Warning: Model file {MODEL_PATH} not found. get_action will not work properly.")
+# # Load the trained model once (this code is executed when the module is imported)
+# MODEL_PATH = "dqn_taxi_model.pkl"
+# if os.path.exists(MODEL_PATH):
+#     trained_model = DQN(STATE_DIM, ACTION_DIM)
+#     trained_model.load_state_dict(torch.load(MODEL_PATH, map_location=torch.device("cpu")))
+#     trained_model.eval()  # set the model to evaluation mode
+# else:
+#     trained_model = None
+#     print(f"Warning: Model file {MODEL_PATH} not found. get_action will not work properly.")
 
 
 # Feature extractor to convert raw state to feature vector
@@ -63,8 +63,8 @@ def extract_features(state):
 # Load Q-table once, at import time
 # Make sure "q_table.pkl" is in the same directory or provide correct path
 q_table = {}
-if os.path.exists("q_table_2_9999_10000.pkl"):
-    with open("q_table_2_9999_10000.pkl","rb") as f:
+if os.path.exists("q_table_at_feature_2_9999_10000.pkl"):
+    with open("q_table_at_feature_2_9999_10000.pkl","rb") as f:
         q_table = pickle.load(f)
 
 def get_q_values(state):
