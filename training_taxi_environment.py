@@ -8,7 +8,7 @@ import time
 from IPython.display import clear_output
 import random
 
-class CustomTaxiEnv:
+class TrainingTaxiEnv:
     def __init__(self, min_size=5, max_size=10, obstacle_prob=0.1, fuel_limit=5000):
         """
         A custom Taxi environment that randomizes the grid size (between min_size and max_size),
@@ -102,6 +102,7 @@ class CustomTaxiEnv:
             if self.taxi_pos == self.passenger_loc and not self.passenger_picked:
                 # Correct pickup
                 self.passenger_picked = True
+                reward += 10
             else:
                 # Wrong pickup
                 reward -= 10
@@ -109,7 +110,6 @@ class CustomTaxiEnv:
             if self.passenger_picked:
                 if self.taxi_pos == self.destination:
                     # Successful dropoff
-                    reward += 50
                     done = True
                 else:
                     # Wrong dropoff location
@@ -139,13 +139,13 @@ class CustomTaxiEnv:
                     self.passenger_loc = self.taxi_pos
             
         # Small negative reward for each move
-        reward -= 0.1
+        # reward -= 0.1
         
         # Reduce fuel, check end of episode if out of fuel
-        self.fuel -= 1
-        if self.fuel <= 0:
-            reward -= 10
-            done = True
+        # self.fuel -= 1
+        # if self.fuel <= 0:
+        #     reward -= 10
+        #     done = True
 
         return self._get_state(), reward, done, {}
 
@@ -231,7 +231,7 @@ def run_agent(agent_file, env_config, render=False):
     student_agent = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(student_agent)
 
-    env = CustomTaxiEnv()
+    env = TrainingTaxiEnv()
     obs, _ = env.reset()
     total_reward = 0
     done = False
@@ -265,7 +265,7 @@ def run_agent(agent_file, env_config, render=False):
 
 if __name__ == "__main__":
     env_config = {
-        
+        # "fuel_limit" : 20000
     }
 
     agent_scores = []

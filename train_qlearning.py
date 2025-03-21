@@ -2,6 +2,7 @@ import random
 import pickle
 import numpy as np
 
+from training_taxi_environment import TrainingTaxiEnv
 from custom_taxi_env import CustomTaxiEnv
 from simple_custom_taxi_env import SimpleTaxiEnv
 
@@ -63,7 +64,7 @@ def extract_features(state):
     
     return tuple(features)
 
-env = CustomTaxiEnv(fuel_limit=10000)
+env = TrainingTaxiEnv()
 
 rewards_per_episode = []
 
@@ -111,7 +112,7 @@ for episode in range(num_episodes):
 
 
 # Save final Q-table to disk
-with open("q_table_2_9999_30000.pkl", "wb") as f:
+with open("q_table_reward_shrink.pkl", "wb") as f:
     pickle.dump(q_table, f)
 
-print("Training finished and Q-table saved to q_table_at_feature_2_99959_20000.pkl.")
+print("Training finished and Q-table saved to q_table_reward_shrink.pkl.")
