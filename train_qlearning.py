@@ -64,7 +64,7 @@ def extract_features(state):
     
     return tuple(features)
 
-env = TrainingTaxiEnv()
+env = TrainingTaxiEnv(max_size=6)
 
 rewards_per_episode = []
 

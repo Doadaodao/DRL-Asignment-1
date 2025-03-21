@@ -102,14 +102,15 @@ class TrainingTaxiEnv:
             if self.taxi_pos == self.passenger_loc and not self.passenger_picked:
                 # Correct pickup
                 self.passenger_picked = True
-                reward += 10
+                reward += 20
             else:
                 # Wrong pickup
                 reward -= 10
         elif action == 5:  # DROPOFF
             if self.passenger_picked:
                 if self.taxi_pos == self.destination:
-                    # Successful dropoff
+                    # Successful dropoff\
+                    reward += 50
                     done = True
                 else:
                     # Wrong dropoff location
@@ -142,10 +143,10 @@ class TrainingTaxiEnv:
         # reward -= 0.1
         
         # Reduce fuel, check end of episode if out of fuel
-        # self.fuel -= 1
-        # if self.fuel <= 0:
-        #     reward -= 10
-        #     done = True
+        self.fuel -= 1
+        if self.fuel <= 0:
+            # reward -= 10
+            done = True
 
         return self._get_state(), reward, done, {}
 
@@ -270,7 +271,7 @@ if __name__ == "__main__":
 
     agent_scores = []
     step_counts = []
-    for _ in range(10):
+    for _ in range(1):
         agent_score, step_count = run_agent("student_agent.py", env_config, render=True)
         agent_scores.append(agent_score)
         step_counts.append(step_count)
