@@ -155,7 +155,7 @@ def train():
                   f"Avg Steps: {avg_steps:.1f}")
     
     # Save the trained model locally.
-    torch.save(policy_net.state_dict(), "policy_model.pkl")
+    torch.save(policy_net.state_dict(), "policy_model_pickup_reward.pkl")
     print("Training complete. Model saved as 'policy_model.pkl'.")
 
 if __name__ == "__main__":

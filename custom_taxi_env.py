@@ -266,7 +266,7 @@ def run_agent(agent_file, env_config, render=False):
 
 if __name__ == "__main__":
     env_config = {
-        
+        # "fuel_limit" : 20000
     }
 
     agent_scores = []
