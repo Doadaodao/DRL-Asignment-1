@@ -102,6 +102,7 @@ class CustomTaxiEnv:
             if self.taxi_pos == self.passenger_loc and not self.passenger_picked:
                 # Correct pickup
                 self.passenger_picked = True
+                reward += 10
             else:
                 # Wrong pickup
                 reward -= 10

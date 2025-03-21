@@ -89,7 +89,7 @@ def train():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
 
-    env = CustomTaxiEnv()
+    env = CustomTaxiEnv(fuel_limit=10000)
     input_dim = 20     # As per our feature extractor.
     hidden_dim = 64
     output_dim = 6     # Number of possible actions.
