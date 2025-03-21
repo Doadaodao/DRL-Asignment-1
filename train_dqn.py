@@ -70,12 +70,12 @@ def extract_features(state):
 
     features = []
     
-    # Create station list
-    stations = [(s0_r, s0_c), (s1_r, s1_c), (s2_r, s2_c), (s3_r, s3_c)]
+    # # Create station list
+    # stations = [(s0_r, s0_c), (s1_r, s1_c), (s2_r, s2_c), (s3_r, s3_c)]
 
-    for station in stations:
-        features.append(station[0] - taxi_row)
-        features.append(station[1] - taxi_col)
+    # for station in stations:
+    #     features.append(station[0] - taxi_row)
+    #     features.append(station[1] - taxi_col)
     
     features.append(obstacle_north)
     features.append(obstacle_south)
@@ -92,9 +92,9 @@ def extract_features(state):
 # ----------------------------
 def train():
     # Hyperparameters
-    num_episodes = 1000            # Total episodes for training
+    num_episodes = 10000            # Total episodes for training
     max_steps = 20000                # Maximum steps per episode
-    batch_size = 64                # Batch size for experience replay
+    batch_size = 8                # Batch size for experience replay
     gamma = 0.99                   # Discount factor for future rewards
     learning_rate = 1e-3           # Learning rate for optimizer
     buffer_capacity = 10000        # Replay buffer size
@@ -104,7 +104,7 @@ def train():
     epsilon_decay = 0.9999          # Decay factor for epsilon
 
     # Create environment instance
-    env = CustomTaxiEnv(fuel_limit=5000)
+    env = CustomTaxiEnv(fuel_limit=10000)
     state, _ = env.reset()
     state_dim = len(extract_features(state))         # In our environment, state is a fixed-length tuple (e.g., length=16)
     action_dim = 6                 # There are 6 discrete actions: South, North, East, West, Pick Up, Drop Off
@@ -130,6 +130,8 @@ def train():
     frame_idx = 0  # Total number of steps taken
 
     epsilon = epsilon_start
+
+    rewards_per_episode = []
     # Main training loop over episodes
     for episode in range(num_episodes):
         state, _ = env.reset()  # Reset environment at the start of each episode
@@ -188,12 +190,18 @@ def train():
 
             if done:
                 break
+        
+        rewards_per_episode.append(episode_reward)
 
         # Periodically update the target network with the policy network’s weights.
         if episode % target_update_freq == 0:
             target_net.load_state_dict(policy_net.state_dict())
 
         print(f"Episode {episode:3d} | Reward: {episode_reward:7.2f} | Epsilon: {epsilon:.3f}")
+        # Optionally print progress
+        if (episode + 1) % 20 == 0:
+            avg_reward = np.mean(rewards_per_episode[-20:])
+            print(f"Episode {episode + 1}, Avg Reward: {avg_reward:.4f}, Epsilon: {epsilon:.3f}")
 
     # Save the trained model's state dictionary.
     torch.save(policy_net.state_dict(), "dqn_taxi_model.pkl")

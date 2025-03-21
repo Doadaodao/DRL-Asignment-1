@@ -19,7 +19,7 @@ class DQN(nn.Module):
         return self.fc3(x)
 
 # Global constants (update these if your state dimension is different)
-STATE_DIM = 16      # e.g., length of the state tuple (this should match your environment)
+STATE_DIM = 14      # e.g., length of the state tuple (this should match your environment)
 ACTION_DIM = 6      # six possible discrete actions
 
 # Load the trained model once (this code is executed when the module is imported)
@@ -44,9 +44,9 @@ def extract_features(state):
     # Create station list
     stations = [(s0_r, s0_c), (s1_r, s1_c), (s2_r, s2_c), (s3_r, s3_c)]
 
-    # for station in stations:
-    #     features.append(station[0] - taxi_row)
-    #     features.append(station[1] - taxi_col)
+    for station in stations:
+        features.append(station[0] - taxi_row)
+        features.append(station[1] - taxi_col)
     
     features.append(obstacle_north)
     features.append(obstacle_south)
@@ -56,7 +56,8 @@ def extract_features(state):
     features.append(passenger_look)
     features.append(destination_look)
     
-    return tuple(features)
+    # return tuple(features)
+    return np.array(features, dtype=np.float32)
 
 
 
@@ -81,29 +82,26 @@ def get_action(obs):
 
     feature = extract_features(obs)
     
-    if np.random.rand() < 0.0001:
-        action = np.random.choice([0, 1, 2, 3, 4, 5])
-    else:
-        q_values = get_q_values(feature)
-        action = int(np.argmax(q_values))
-    # q_values = get_q_values(obs)
-    # action = int(np.argmax(q_values))
-    # return random.choice([0, 1, 2, 3, 4, 5])
+    # if np.random.rand() < 0.0001:
+    #     action = np.random.choice([0, 1, 2, 3, 4, 5])
+    # else:
+    #     q_values = get_q_values(feature)
+    #     action = int(np.argmax(q_values))
 
-    # if trained_model is None:
-    #     # If the model isn't loaded, you could either raise an error or return a random action.
-    #     raise ValueError("Trained model not loaded. Please ensure that dqn_taxi_model.pkl exists.")
+    if trained_model is None:
+        # If the model isn't loaded, you could either raise an error or return a random action.
+        raise ValueError("Trained model not loaded. Please ensure that dqn_taxi_model.pkl exists.")
     
-    # # Convert observation (tuple) to a PyTorch tensor.
-    # # Ensure the input has the correct shape: [batch_size, STATE_DIM]
-    # obs_tensor = torch.FloatTensor(np.array(obs)).unsqueeze(0)  # shape: (1, STATE_DIM)
+    # Convert observation (tuple) to a PyTorch tensor.
+    # Ensure the input has the correct shape: [batch_size, STATE_DIM]
+    obs_tensor = torch.FloatTensor(np.array(feature)).unsqueeze(0)  # shape: (1, STATE_DIM)
     
-    # # Forward pass through the network to get Q-values for each action.
-    # with torch.no_grad():
-    #     q_values = trained_model(obs_tensor)
+    # Forward pass through the network to get Q-values for each action.
+    with torch.no_grad():
+        q_values = trained_model(obs_tensor)
     
-    # # Choose the action with the highest Q-value.
-    # action = q_values.argmax(dim=1).item()
+    # Choose the action with the highest Q-value.
+    action = q_values.argmax(dim=1).item()
 
 
 
