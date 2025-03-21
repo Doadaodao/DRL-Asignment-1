@@ -36,6 +36,16 @@ def extract_features(state):
     # Create station list
     stations = [(s0_r, s0_c), (s1_r, s1_c), (s2_r, s2_c), (s3_r, s3_c)]
 
+    at_passenger = 0
+    for station in stations:
+        if taxi_row == station[0] and taxi_col == station[1] and passenger_look:
+            at_passenger = 1
+
+    at_destination = 0
+    for station in stations:
+        if taxi_row == station[0] and taxi_col == station[1] and destination_look:
+            at_destination = 1
+
     # for station in stations:
     #     features.append(station[0] - taxi_row)
     #     features.append(station[1] - taxi_col)
@@ -45,8 +55,11 @@ def extract_features(state):
     features.append(obstacle_east)
     features.append(obstacle_west)
 
-    features.append(passenger_look)
-    features.append(destination_look)
+    # features.append(passenger_look)
+    # features.append(destination_look)
+
+    features.append(at_passenger)
+    features.append(at_destination)
     
     return tuple(features)
 
@@ -98,7 +111,7 @@ for episode in range(num_episodes):
 
 
 # Save final Q-table to disk
-with open("q_table_2_9999_10000.pkl", "wb") as f:
+with open("q_table_at_feature_2_9999_10000.pkl", "wb") as f:
     pickle.dump(q_table, f)
 
-print("Training finished and Q-table saved to q_table_2_9999_10000.pkl.")
+print("Training finished and Q-table saved to q_table_at_feature_2_9999_10000.pkl.")
