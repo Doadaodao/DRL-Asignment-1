@@ -97,7 +97,7 @@ for episode in range(num_episodes):
         else:
             action = np.argmax(q_table[feature])
 
-        next_state, reward, done, _ = env.step(action)
+        next_state, reward, done, empty_fuel, _ = env.step(action)
         next_feature = extract_features(state)
         total_reward += reward
 

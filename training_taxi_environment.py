@@ -86,6 +86,7 @@ class TrainingTaxiEnv:
 
     def step(self, action):
         reward = 0
+        empty_fuel = False
         done = False
         r, c = self.taxi_pos
         nr, nc = r, c
@@ -149,9 +150,10 @@ class TrainingTaxiEnv:
         self.fuel -= 1
         if self.fuel <= 0:
             # reward -= 10
+            empty_fuel = True
             done = True
 
-        return self._get_state(), reward, done, {}
+        return self._get_state(), reward, done, empty_fuel, {}
 
     def _get_state(self):
         """

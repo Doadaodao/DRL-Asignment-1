@@ -134,11 +134,15 @@ def train():
             log_prob = m.log_prob(action)
             log_probs.append(log_prob)
             
-            obs, reward, done, _ = env.step(action.item())
+            obs, reward, done, empty_fuel, _ = env.step(action.item())
             rewards.append(reward)
             total_reward += reward
             steps += 1
-        
+
+        if empty_fuel:
+            episode -= 1
+            continue
+
         discounted_rewards = discount_rewards(rewards, gamma)
         discounted_rewards = torch.tensor(discounted_rewards, dtype=torch.float32).to(device)
         
@@ -166,8 +170,8 @@ def train():
                   f"Avg Steps: {avg_steps:.1f}")
     
     # Save the trained model locally.
-    torch.save(policy_net.state_dict(), "policy_model_station_feature_1e3.pkl")
-    print("Training complete. Model saved as 'policy_model_station_feature_1e3.pkl'.")
+    torch.save(policy_net.state_dict(), "PN_station_feat_episode_select_1e3.pkl")
+    print("Training complete. Model saved as 'PN_station_feat_episode_select_1e3.pkl'.")
 
 if __name__ == "__main__":
     train()
