@@ -58,8 +58,8 @@
 # # Load Q-table once, at import time
 # # Make sure "q_table.pkl" is in the same directory or provide correct path
 # q_table = {}
-# if os.path.exists("q_table_at_feature_2_99995_20000.pkl"):
-#     with open("q_table_at_feature_2_99995_20000.pkl","rb") as f:
+# if os.path.exists("q_table_training_env_station_feature.pkl"):
+#     with open("q_table_training_env_station_feature.pkl","rb") as f:
 #         q_table = pickle.load(f)
 
 # def get_q_values(state):
@@ -133,36 +133,25 @@ def extract_features(obs):
     
     taxi_row_norm = taxi_row
     taxi_col_norm = taxi_col
-    features = []
+    features = [taxi_row_norm, taxi_col_norm]
     
-    # for (s_row, s_col) in stations:
-    #     diff_row = (s_row - taxi_row)
-    #     diff_col = (s_col - taxi_col)
-    #     manhattan_dist = (abs(s_row - taxi_row) + abs(s_col - taxi_col))
-    #     features.extend([diff_row, diff_col, manhattan_dist])
-
-    station_north = int((taxi_row-1, taxi_col) in stations)
-    station_south = int((taxi_row+1, taxi_col) in stations)
-    station_east = int((taxi_row, taxi_col+1) in stations)
-    station_west = int((taxi_row, taxi_col-1) in stations)
-
-    features.append(station_north)
-    features.append(station_south)
-    features.append(station_east)
-    features.append(station_west)
-
+    for (s_row, s_col) in stations:
+        diff_row = (s_row - taxi_row)
+        diff_col = (s_col - taxi_col)
+        manhattan_dist = (abs(s_row - taxi_row) + abs(s_col - taxi_col))
+        features.extend([diff_row, diff_col, manhattan_dist])
+    
     features.extend(obstacle_flags)
     features.append(passenger_flag)
     features.append(destination_flag)
     
-    return np.array(features) # Feature vector dimension = 2 + 4*3 + 4 + 1 + 1 = 20
-
+    return np.array(features)
 
 # -------------------------------
 # Policy Network Definition
 # -------------------------------
 class PolicyNetwork(nn.Module):
-    def __init__(self, input_dim=10, hidden_dim=64, output_dim=6):
+    def __init__(self, input_dim=20, hidden_dim=64, output_dim=6):
         """
         A simple MLP policy network.
         """
@@ -193,7 +182,7 @@ def load_model():
     if policy_model is None:
         policy_model = PolicyNetwork().to(device)
         # Load the state dictionary. Adjust the path if needed.
-        policy_model.load_state_dict(torch.load("policy_model_training_env_station_feature_1e3.pkl", map_location=device))
+        policy_model.load_state_dict(torch.load("policy_model_training_env_lre4.pkl", map_location=device))
         policy_model.eval()  # Set the model to evaluation mode.
 
 # -------------------------------

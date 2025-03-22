@@ -5,6 +5,7 @@ import torch.nn.functional as F
 import numpy as np
 import random
 from custom_taxi_env import CustomTaxiEnv
+from training_taxi_environment import TrainingTaxiEnv
 
 # -------------------------------
 # Feature Extraction Function
@@ -35,11 +36,11 @@ def extract_features(obs):
     taxi_col_norm = taxi_col
     features = []
     
-    # for (s_row, s_col) in stations:
-    #     diff_row = (s_row - taxi_row)
-    #     diff_col = (s_col - taxi_col)
-    #     manhattan_dist = (abs(s_row - taxi_row) + abs(s_col - taxi_col))
-    #     features.extend([diff_row, diff_col, manhattan_dist])
+    for (s_row, s_col) in stations:
+        diff_row = (s_row - taxi_row)
+        diff_col = (s_col - taxi_col)
+        manhattan_dist = (abs(s_row - taxi_row) + abs(s_col - taxi_col))
+        features.extend([diff_row, diff_col, manhattan_dist])
 
     station_north = int((taxi_row-1, taxi_col) in stations)
     station_south = int((taxi_row+1, taxi_col) in stations)
@@ -55,13 +56,13 @@ def extract_features(obs):
     features.append(passenger_flag)
     features.append(destination_flag)
     
-    return np.array(features)  # Feature vector dimension = 2 + 4*3 + 4 + 1 + 1 = 20
+    return np.array(features) # Feature vector dimension = 4*3 + 4 + 4 + 1 + 1 = 22
 
 # -------------------------------
 # Policy Network Definition
 # -------------------------------
 class PolicyNetwork(nn.Module):
-    def __init__(self, input_dim=20, hidden_dim=64, output_dim=6):
+    def __init__(self, input_dim=22, hidden_dim=64, output_dim=6):
         """
         A simple MLP policy network.
         """
@@ -99,14 +100,14 @@ def train():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
 
-    env = CustomTaxiEnv(fuel_limit=10000)
-    input_dim = 20     # As per our feature extractor.
+    env = TrainingTaxiEnv(min_size=7, max_size=9)
+    input_dim = 22     # As per our feature extractor.
     hidden_dim = 64
     output_dim = 6     # Number of possible actions.
     policy_net = PolicyNetwork(input_dim, hidden_dim, output_dim).to(device)
     
     optimizer = optim.Adam(policy_net.parameters(), lr=0.001)
-    num_episodes = 1000
+    num_episodes = 2000
     gamma = 0.99
 
     # Track statistics for monitoring training.
@@ -165,8 +166,8 @@ def train():
                   f"Avg Steps: {avg_steps:.1f}")
     
     # Save the trained model locally.
-    torch.save(policy_net.state_dict(), "policy_model_pickup_reward.pkl")
-    print("Training complete. Model saved as 'policy_model.pkl'.")
+    torch.save(policy_net.state_dict(), "policy_model_manhattan_station_feature_1e3.pkl")
+    print("Training complete. Model saved as 'policy_model_manhattan_station_feature_1e3.pkl'.")
 
 if __name__ == "__main__":
     train()
