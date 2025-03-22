@@ -231,7 +231,7 @@ def run_agent(agent_file, env_config, render=False):
     student_agent = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(student_agent)
 
-    env = CustomTaxiEnv(max_size=5)
+    env = CustomTaxiEnv()
     obs, _ = env.reset()
     total_reward = 0
     done = False
