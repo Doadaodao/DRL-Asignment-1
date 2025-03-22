@@ -102,7 +102,7 @@ class TrainingTaxiEnv:
             if self.taxi_pos == self.passenger_loc and not self.passenger_picked:
                 # Correct pickup
                 self.passenger_picked = True
-                reward += 20
+                reward += 50
             else:
                 # Wrong pickup
                 reward -= 10

@@ -34,19 +34,29 @@ def extract_features(obs):
     
     taxi_row_norm = taxi_row
     taxi_col_norm = taxi_col
-    features = [taxi_row_norm, taxi_col_norm]
+    features = []
     
-    for (s_row, s_col) in stations:
-        diff_row = (s_row - taxi_row)
-        diff_col = (s_col - taxi_col)
-        manhattan_dist = (abs(s_row - taxi_row) + abs(s_col - taxi_col))
-        features.extend([diff_row, diff_col, manhattan_dist])
-    
+    # for (s_row, s_col) in stations:
+    #     diff_row = (s_row - taxi_row)
+    #     diff_col = (s_col - taxi_col)
+    #     manhattan_dist = (abs(s_row - taxi_row) + abs(s_col - taxi_col))
+    #     features.extend([diff_row, diff_col, manhattan_dist])
+
+    station_north = int((taxi_row-1, taxi_col) in stations)
+    station_south = int((taxi_row+1, taxi_col) in stations)
+    station_east = int((taxi_row, taxi_col+1) in stations)
+    station_west = int((taxi_row, taxi_col-1) in stations)
+
+    features.append(station_north)
+    features.append(station_south)
+    features.append(station_east)
+    features.append(station_west)
+
     features.extend(obstacle_flags)
     features.append(passenger_flag)
     features.append(destination_flag)
     
-    return np.array(features)  # Feature vector dimension = 2 + 4*3 + 4 + 1 + 1 = 20
+    return np.array(features) # Feature vector dimension = 2 + 4*3 + 4 + 1 + 1 = 20
 
 # -------------------------------
 # Policy Network Definition
@@ -96,7 +106,7 @@ def train():
     output_dim = 6     # Number of possible actions.
     policy_net = PolicyNetwork(input_dim, hidden_dim, output_dim).to(device)
     
-    optimizer = optim.Adam(policy_net.parameters(), lr=0.0001)
+    optimizer = optim.Adam(policy_net.parameters(), lr=0.001)
     num_episodes = 1000
     gamma = 0.99
 
@@ -156,8 +166,8 @@ def train():
                   f"Avg Steps: {avg_steps:.1f}")
     
     # Save the trained model locally.
-    torch.save(policy_net.state_dict(), "policy_model_training_env_lre4.pkl")
-    print("Training complete. Model saved as 'policy_model_training_env_lre4.pkl'.")
+    torch.save(policy_net.state_dict(), "policy_model_training_env_station_feature_1e3.pkl")
+    print("Training complete. Model saved as 'policy_model_training_env_station_feature_1e3.pkl'.")
 
 if __name__ == "__main__":
     train()

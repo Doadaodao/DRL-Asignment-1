@@ -33,14 +33,24 @@ def extract_features(obs):
     
     taxi_row_norm = taxi_row
     taxi_col_norm = taxi_col
-    features = [taxi_row_norm, taxi_col_norm]
+    features = []
     
-    for (s_row, s_col) in stations:
-        diff_row = (s_row - taxi_row)
-        diff_col = (s_col - taxi_col)
-        manhattan_dist = (abs(s_row - taxi_row) + abs(s_col - taxi_col))
-        features.extend([diff_row, diff_col, manhattan_dist])
-    
+    # for (s_row, s_col) in stations:
+    #     diff_row = (s_row - taxi_row)
+    #     diff_col = (s_col - taxi_col)
+    #     manhattan_dist = (abs(s_row - taxi_row) + abs(s_col - taxi_col))
+    #     features.extend([diff_row, diff_col, manhattan_dist])
+
+    station_north = int((taxi_row-1, taxi_col) in stations)
+    station_south = int((taxi_row+1, taxi_col) in stations)
+    station_east = int((taxi_row, taxi_col+1) in stations)
+    station_west = int((taxi_row, taxi_col-1) in stations)
+
+    features.append(station_north)
+    features.append(station_south)
+    features.append(station_east)
+    features.append(station_west)
+
     features.extend(obstacle_flags)
     features.append(passenger_flag)
     features.append(destination_flag)
