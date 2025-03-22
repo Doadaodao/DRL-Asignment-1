@@ -100,8 +100,8 @@ def train():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"Using device: {device}")
 
-    env = TrainingTaxiEnv(max_size=8)
-    input_dim = 20     # As per our feature extractor.
+    env = TrainingTaxiEnv(min_size=7, max_size=9)
+    input_dim = 10     # As per our feature extractor.
     hidden_dim = 64
     output_dim = 6     # Number of possible actions.
     policy_net = PolicyNetwork(input_dim, hidden_dim, output_dim).to(device)

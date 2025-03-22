@@ -9,7 +9,7 @@ from IPython.display import clear_output
 import random
 
 class TrainingTaxiEnv:
-    def __init__(self, min_size=5, max_size=10, obstacle_prob=0.1, fuel_limit=5000):
+    def __init__(self, min_size=5, max_size=10, obstacle_prob=0.1, fuel_limit=10000):
         """
         A custom Taxi environment that randomizes the grid size (between min_size and max_size),
         passenger start/destination, and obstacle placement each time reset() is called.
@@ -80,7 +80,7 @@ class TrainingTaxiEnv:
         
         # Tracking states
         self.passenger_picked = False
-        self.fuel = 5000  # or whatever limit you want
+        self.fuel = 10000  # or whatever limit you want
         
         return self._get_state(), {}
 
