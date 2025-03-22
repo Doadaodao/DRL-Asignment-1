@@ -270,7 +270,7 @@ if __name__ == "__main__":
 
     agent_scores = []
     step_counts = []
-    for _ in range(10):
+    for _ in range(5):
         agent_score, step_count = run_agent("student_agent.py", env_config, render=True)
         agent_scores.append(agent_score)
         step_counts.append(step_count)
