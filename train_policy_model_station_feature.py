@@ -164,6 +164,10 @@ def train():
         loss_history.append(policy_loss.item())
         steps_history.append(steps)
 
+        # print(f"Episode {episode + 1}/{num_episodes} | "
+        #       f"Total Reward: {total_reward:.2f} | "
+        #       f"Loss: {policy_loss.item():.4f} | "
+        #       f"Steps: {steps}")
         
         # Print training statistics every 50 episodes.
         if (episode + 1) % 50 == 0:
@@ -175,7 +179,7 @@ def train():
                   f"Avg Loss: {avg_loss:.4f} | "
                   f"Avg Steps: {avg_steps:.1f}")
         episode += 1
-        
+
     # Save the trained model locally.
     torch.save(policy_net.state_dict(), "PN_station_feat_episode_select_1e3.pkl")
     print("Training complete. Model saved as 'PN_station_feat_episode_select_1e3.pkl'.")
