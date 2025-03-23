@@ -19,6 +19,7 @@ class TrainingTaxiEnv:
         self.obstacle_prob = obstacle_prob
 
         self.fuel = fuel_limit
+        self.fuel_limit = fuel_limit
         
         # Action meanings (for reference):
         # 0: Move South
@@ -80,7 +81,7 @@ class TrainingTaxiEnv:
         
         # Tracking states
         self.passenger_picked = False
-        # self.fuel = self.fuel_limit  # or whatever limit you want
+        self.fuel = self.fuel_limit  # or whatever limit you want
         
         return self._get_state(), {}
 
@@ -115,7 +116,7 @@ class TrainingTaxiEnv:
                     done = True
                 else:
                     # Wrong dropoff location
-                    reward -= 100
+                    reward -= 10
                 self.passenger_picked = False
             else:
                 # Dropping off without passenger

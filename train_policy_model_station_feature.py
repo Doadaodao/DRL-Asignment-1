@@ -115,14 +115,17 @@ def train():
     loss_history = []
     steps_history = []
 
-    for episode in range(num_episodes):
+    episode = 0
+    while episode < num_episodes:
         obs, _ = env.reset()
         # grid_size = env.grid_size
         done = False
+        empty_fuel = False
         log_probs = []
         rewards = []
         total_reward = 0
         steps = 0
+        
         
         while not done:
             features = extract_features(obs)
@@ -140,8 +143,10 @@ def train():
             steps += 1
 
         if empty_fuel:
-            episode -= 1
+            # print("Empty fuel. Skipping episode.")
             continue
+
+        
 
         discounted_rewards = discount_rewards(rewards, gamma)
         discounted_rewards = torch.tensor(discounted_rewards, dtype=torch.float32).to(device)
@@ -158,6 +163,7 @@ def train():
         reward_history.append(total_reward)
         loss_history.append(policy_loss.item())
         steps_history.append(steps)
+
         
         # Print training statistics every 50 episodes.
         if (episode + 1) % 50 == 0:
@@ -168,7 +174,8 @@ def train():
                   f"Avg Reward: {avg_reward:.2f} | "
                   f"Avg Loss: {avg_loss:.4f} | "
                   f"Avg Steps: {avg_steps:.1f}")
-    
+        episode += 1
+        
     # Save the trained model locally.
     torch.save(policy_net.state_dict(), "PN_station_feat_episode_select_1e3.pkl")
     print("Training complete. Model saved as 'PN_station_feat_episode_select_1e3.pkl'.")

@@ -115,7 +115,8 @@ def train():
     loss_history = []
     steps_history = []
 
-    for episode in range(num_episodes):
+    episode = 0
+    while episode < num_episodes:
         obs, _ = env.reset()
         # grid_size = env.grid_size
         done = False
@@ -140,7 +141,6 @@ def train():
             steps += 1
 
         if empty_fuel:
-            episode -= 1
             continue
         
         discounted_rewards = discount_rewards(rewards, gamma)
@@ -158,7 +158,8 @@ def train():
         reward_history.append(total_reward)
         loss_history.append(policy_loss.item())
         steps_history.append(steps)
-        
+
+
         # Print training statistics every 50 episodes.
         if (episode + 1) % 50 == 0:
             avg_reward = np.mean(reward_history[-50:])
@@ -168,6 +169,8 @@ def train():
                   f"Avg Reward: {avg_reward:.2f} | "
                   f"Avg Loss: {avg_loss:.4f} | "
                   f"Avg Steps: {avg_steps:.1f}")
+            
+        episode += 1
     
     # Save the trained model locally.
     torch.save(policy_net.state_dict(), "PN_manhattan_episode_select_1e3.pkl")
