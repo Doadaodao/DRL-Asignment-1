@@ -8,8 +8,8 @@ import time
 from IPython.display import clear_output
 import random
 
-class CustomTaxiEnv:
-    def __init__(self, min_size=5, max_size=10, obstacle_prob=0.05, fuel_limit=5000):
+class ObstacleEnv:
+    def __init__(self, min_size=6, max_size=10, obstacle_prob=0.2, fuel_limit=5000):
         """
         A custom Taxi environment that randomizes the grid size (between min_size and max_size),
         passenger start/destination, and obstacle placement each time reset() is called.
@@ -19,6 +19,7 @@ class CustomTaxiEnv:
         self.obstacle_prob = obstacle_prob
 
         self.fuel = fuel_limit
+        self.fuel_limit = fuel_limit
         
         # Action meanings (for reference):
         # 0: Move South
@@ -49,14 +50,6 @@ class CustomTaxiEnv:
             if not adjacent:
                 self.stations.append((r, c))
         
-        # # Special stations (R, G, Y, B) randomly placed at corners
-        # self.stations = [
-        #     (0, 0), 
-        #     (0, self.grid_size - 1),
-        #     (self.grid_size - 1, 0),
-        #     (self.grid_size - 1, self.grid_size - 1)
-        # ]
-        
         # Place random obstacles
         self.obstacles = set()
         for r in range(self.grid_size):
@@ -80,12 +73,13 @@ class CustomTaxiEnv:
         
         # Tracking states
         self.passenger_picked = False
-        # self.fuel = 5000  # or whatever limit you want
+        self.fuel = self.fuel_limit  # or whatever limit you want
         
         return self._get_state(), {}
 
     def step(self, action):
         reward = 0
+        empty_fuel = False
         done = False
         r, c = self.taxi_pos
         nr, nc = r, c
@@ -102,14 +96,15 @@ class CustomTaxiEnv:
             if self.taxi_pos == self.passenger_loc and not self.passenger_picked:
                 # Correct pickup
                 self.passenger_picked = True
+                # reward += 50
             else:
                 # Wrong pickup
                 reward -= 10
         elif action == 5:  # DROPOFF
             if self.passenger_picked:
                 if self.taxi_pos == self.destination:
-                    # Successful dropoff
-                    reward += 50
+                    # Successful dropoff\
+                    # reward += 50
                     done = True
                 else:
                     # Wrong dropoff location
@@ -129,22 +124,26 @@ class CustomTaxiEnv:
                 (nr, nc) in self.obstacles
             ):
                 # Hit obstacle or went out of bounds
-                reward -= 5
+                reward -= 10
             else:
                 # Valid move
                 self.taxi_pos = (nr, nc)
+
+                # if self.taxi_pos in self.stations:
+                #     reward += 10
                 
                 # If passenger was in the taxi, passenger location follows taxi
                 if self.passenger_picked:
                     self.passenger_loc = self.taxi_pos
             
         # Small negative reward for each move
-        reward -= 0.1
+        # reward -= 0.1
         
         # Reduce fuel, check end of episode if out of fuel
         self.fuel -= 1
         if self.fuel <= 0:
-            reward -= 10
+            # reward -= 10
+            empty_fuel = True
             done = True
 
         return self._get_state(), reward, done, {}
@@ -231,7 +230,7 @@ def run_agent(agent_file, env_config, render=False):
     student_agent = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(student_agent)
 
-    env = CustomTaxiEnv(fuel_limit=5000)
+    env = ObstacleEnv()
     obs, _ = env.reset()
     total_reward = 0
     done = False
@@ -249,7 +248,7 @@ def run_agent(agent_file, env_config, render=False):
         
         action = student_agent.get_action(obs)
 
-        obs, reward, done, _ = env.step(action)
+        obs, reward, done, empty_fuel, _ = env.step(action)
         print('obs=',obs)
         total_reward += reward
         step_count += 1
@@ -265,12 +264,11 @@ def run_agent(agent_file, env_config, render=False):
 
 if __name__ == "__main__":
     env_config = {
-        
     }
 
     agent_scores = []
     step_counts = []
-    for _ in range(5):
+    for _ in range(1):
         agent_score, step_count = run_agent("student_agent.py", env_config, render=True)
         agent_scores.append(agent_score)
         step_counts.append(step_count)

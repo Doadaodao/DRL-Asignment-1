@@ -2,18 +2,16 @@ import random
 import pickle
 import numpy as np
 
-from training_taxi_environment import TrainingTaxiEnv
-from custom_taxi_env import CustomTaxiEnv
-from simple_custom_taxi_env import SimpleTaxiEnv
+from obstacle_env import ObstacleEnv
 
 # Hyperparameters
-alpha = 0.2          # Learning rate
+alpha = 0.1          # Learning rate
 gamma = 0.99         # Discount factor
 epsilon = 1.0        # Exploration rate
 epsilon_min = 0.1
-epsilon_decay = 0.99995  # Epsilon decays each step or episode
+epsilon_decay = 0.9999  # Epsilon decays each step or episode
 
-num_episodes = 50000  # Increase as needed
+num_episodes = 20000  # Increase as needed
 max_steps_per_episode = 4000  # Just a safeguard if you want
 
 # Q-Table as a dictionary: {state: [Q-values for each action]}
@@ -34,48 +32,14 @@ def extract_features(state):
 
     features = []
     
-    # Create station list
-    stations = [(s0_r, s0_c), (s1_r, s1_c), (s2_r, s2_c), (s3_r, s3_c)]
-
-    
-    station_north = int((taxi_row-1, taxi_col) in stations)
-    station_south = int((taxi_row+1, taxi_col) in stations)
-    station_east = int((taxi_row, taxi_col+1) in stations)
-    station_west = int((taxi_row, taxi_col-1) in stations)
-
-    at_passenger = 0
-    for station in stations:
-        if taxi_row == station[0] and taxi_col == station[1] and passenger_look:
-            at_passenger = 1
-
-    at_destination = 0
-    for station in stations:
-        if taxi_row == station[0] and taxi_col == station[1] and destination_look:
-            at_destination = 1
-
-    # for station in stations:
-    #     features.append(station[0] - taxi_row)
-    #     features.append(station[1] - taxi_col)
-    
     features.append(obstacle_north)
     features.append(obstacle_south)
     features.append(obstacle_east)
     features.append(obstacle_west)
 
-    # features.append(station_north)
-    # features.append(station_south)
-    # features.append(station_east)
-    # features.append(station_west)
-
-    # features.append(passenger_look)
-    # features.append(destination_look)
-
-    # features.append(at_passenger)
-    # features.append(at_destination)
-    
     return tuple(features)
 
-env = CustomTaxiEnv(fuel_limit=5000)
+env = ObstacleEnv()
 
 rewards_per_episode = []
 
