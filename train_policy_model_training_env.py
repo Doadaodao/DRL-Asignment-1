@@ -5,7 +5,7 @@ import torch.nn.functional as F
 import numpy as np
 import random
 from custom_taxi_env import CustomTaxiEnv
-from training_taxi_environment import TrainingTaxiEnv
+from training_taxi_env import TrainingTaxiEnv
 
 # -------------------------------
 # Feature Extraction Function

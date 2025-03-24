@@ -2,7 +2,7 @@ import random
 import pickle
 import numpy as np
 
-from training_taxi_environment import TrainingTaxiEnv
+from training_taxi_env import TrainingTaxiEnv
 from custom_taxi_env import CustomTaxiEnv
 from simple_custom_taxi_env import SimpleTaxiEnv
 
@@ -34,14 +34,29 @@ def extract_features(state):
 
     features = []
     
+    # station_north = int((taxi_row-1, taxi_col) in stations)
+    # station_south = int((taxi_row+1, taxi_col) in stations)
+    # station_east = int((taxi_row, taxi_col+1) in stations)
+    # station_west = int((taxi_row, taxi_col-1) in stations)
+
+    # features.append(station_north)
+    # features.append(station_south)
+    # features.append(station_east)
+    # features.append(station_west)
+
     # Create station list
     stations = [(s0_r, s0_c), (s1_r, s1_c), (s2_r, s2_c), (s3_r, s3_c)]
 
+    for (s_row, s_col) in stations:
+        diff_row = (s_row - taxi_row)
+        diff_col = (s_col - taxi_col)
+        # manhattan_dist = (abs(s_row - taxi_row) + abs(s_col - taxi_col))
+        features.extend([diff_row, diff_col])
     
-    station_north = int((taxi_row-1, taxi_col) in stations)
-    station_south = int((taxi_row+1, taxi_col) in stations)
-    station_east = int((taxi_row, taxi_col+1) in stations)
-    station_west = int((taxi_row, taxi_col-1) in stations)
+    features.append(obstacle_north)
+    features.append(obstacle_south)
+    features.append(obstacle_east)
+    features.append(obstacle_west)
 
     at_passenger = 0
     for station in stations:
@@ -53,29 +68,15 @@ def extract_features(state):
         if taxi_row == station[0] and taxi_col == station[1] and destination_look:
             at_destination = 1
 
-    # for station in stations:
-    #     features.append(station[0] - taxi_row)
-    #     features.append(station[1] - taxi_col)
-    
-    features.append(obstacle_north)
-    features.append(obstacle_south)
-    features.append(obstacle_east)
-    features.append(obstacle_west)
-
-    # features.append(station_north)
-    # features.append(station_south)
-    # features.append(station_east)
-    # features.append(station_west)
-
     # features.append(passenger_look)
     # features.append(destination_look)
 
-    # features.append(at_passenger)
-    # features.append(at_destination)
+    features.append(at_passenger)
+    features.append(at_destination)
     
     return tuple(features)
 
-env = CustomTaxiEnv(fuel_limit=5000)
+env = TrainingTaxiEnv()
 
 rewards_per_episode = []
 
@@ -97,7 +98,7 @@ for episode in range(num_episodes):
         else:
             action = np.argmax(q_table[feature])
 
-        next_state, reward, done, _ = env.step(action)
+        next_state, reward, done, empty_fuel, wrong_drop, _ = env.step(action)
         next_feature = extract_features(state)
         total_reward += reward
 
@@ -111,6 +112,9 @@ for episode in range(num_episodes):
 
         state = next_state
         feature = next_feature
+
+        if wrong_drop:
+            break
     
     rewards_per_episode.append(total_reward)
 
@@ -123,7 +127,7 @@ for episode in range(num_episodes):
 
 
 # Save final Q-table to disk
-with open("q_table_avoid_obstacle.pkl", "wb") as f:
+with open("q_table_no_drop_99995_35000.pkl", "wb") as f:
     pickle.dump(q_table, f)
 
-print("Training finished and Q-table saved to q_table_avoid_obstacle.pkl.")
+print("Training finished and Q-table saved to q_table_no_drop_99995_35000.pkl.")

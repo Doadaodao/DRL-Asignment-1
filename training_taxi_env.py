@@ -9,7 +9,7 @@ from IPython.display import clear_output
 import random
 
 class TrainingTaxiEnv:
-    def __init__(self, min_size=6, max_size=8, obstacle_prob=0.05, fuel_limit=20000):
+    def __init__(self, min_size=7, max_size=10, obstacle_prob=0.1, fuel_limit=20000):
         """
         A custom Taxi environment that randomizes the grid size (between min_size and max_size),
         passenger start/destination, and obstacle placement each time reset() is called.
@@ -50,14 +50,6 @@ class TrainingTaxiEnv:
             if not adjacent:
                 self.stations.append((r, c))
         
-        # # Special stations (R, G, Y, B) randomly placed at corners
-        # self.stations = [
-        #     (0, 0), 
-        #     (0, self.grid_size - 1),
-        #     (self.grid_size - 1, 0),
-        #     (self.grid_size - 1, self.grid_size - 1)
-        # ]
-        
         # Place random obstacles
         self.obstacles = set()
         for r in range(self.grid_size):
@@ -88,6 +80,7 @@ class TrainingTaxiEnv:
     def step(self, action):
         reward = 0
         empty_fuel = False
+        wrong_drop = False
         done = False
         r, c = self.taxi_pos
         nr, nc = r, c
@@ -117,6 +110,8 @@ class TrainingTaxiEnv:
                 else:
                     # Wrong dropoff location
                     reward -= 10
+                    done = True
+                    wrong_drop = True
                 self.passenger_picked = False
             else:
                 # Dropping off without passenger
@@ -143,9 +138,6 @@ class TrainingTaxiEnv:
                 # If passenger was in the taxi, passenger location follows taxi
                 if self.passenger_picked:
                     self.passenger_loc = self.taxi_pos
-            
-        # Small negative reward for each move
-        # reward -= 0.1
         
         # Reduce fuel, check end of episode if out of fuel
         self.fuel -= 1
@@ -154,7 +146,7 @@ class TrainingTaxiEnv:
             empty_fuel = True
             done = True
 
-        return self._get_state(), reward, done, empty_fuel, {}
+        return self._get_state(), reward, done, empty_fuel, wrong_drop, {}
 
     def _get_state(self):
         """
